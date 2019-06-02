@@ -12,7 +12,8 @@ var Y = [[2,0.89],[1.8,-4.1],[0.91,-2.1],[-1.9,-0.9]];
 // closely transforms A into Y. (i.e. find X when Y=AX)
 
 // We will solve this problem in the complex plane, using
-// ganja matrix functions and the Moore Penrose pseudo inverse.
+// ganja matrix functions and the Moore Penrose pseudo inverse. 穆尔彭罗斯伪逆
+// https://blog.csdn.net/u010182633/article/details/49299551
 
 var C = Algebra(0,1);
 
@@ -24,7 +25,7 @@ var C = Algebra(0,1);
 var findTransform = C.inline((A,Y)=>{
   A = A.map(p=>[new C(p)]);    // convert A to vector of complex numbers
   Y = Y.map(p=>[new C(p)]);    // convert Y to vector of complex numbers
-  return (~A*A)**-1*~A*Y;      // calculate transform.
+  return (~A*A)**-1*~A*Y;      // calculate transform.  ~代表共轭 
 });
 
 // To test the transform, we apply it.

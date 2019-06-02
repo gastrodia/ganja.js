@@ -19,10 +19,10 @@ Algebra(2,0,1,()=>{
     var L=line(-1,1,0.5)
     
     // Or by joining two points. We define M as a function so it will update when C or A are dragged.
-    var M=()=>C&A;
+    var M=()=>C&A;  //& vee代表内积？
     
     // Points can also be found by intersecting two lines. We similarly define D as a function for interactive updates. 
-    var D=()=>L^M;
+    var D=()=>L^M; // wedge代表外积？
     
     // We now use the graph function to create an SVG object that visualises our algebraic elements. The graph function accepts
     // an array of items that it will render in order. It can render points, lines, labels, colors, line segments and polygons.
