@@ -23,16 +23,21 @@ var C = Algebra(0,1);
 // the conjugate transpose.  
 
 var findTransform = C.inline((A,Y)=>{
+  debugger
   A = A.map(p=>[new C(p)]);    // convert A to vector of complex numbers
   Y = Y.map(p=>[new C(p)]);    // convert Y to vector of complex numbers
   return (~A*A)**-1*~A*Y;      // calculate transform.  ~代表共轭 
 });
 
 // To test the transform, we apply it.
-var testTransform = C.inline((A,X)=>A.map(p=>[...((new C(p))*X)]));
+var testTransform = C.inline((A,X)=>{
+  debugger
+  return A.map(p=>[...((new C(p))*X)])
+});
 
 // Now find and test for our data.
 var X = findTransform(A,Y);
+debugger
 var Y2 = testTransform(A,X);
 
 // We visualise this result (in a PGA2D algebra)
