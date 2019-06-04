@@ -261,11 +261,24 @@
           }
           ));
           basis.forEach((o,oi)=>{
-              gpo[o].forEach(([xi,yi])=>op[oi][xi] = (grades[oi] == grades[xi] + grades[yi]) ? ((mulTable[xi][yi] == '0') ? '0' : ((mulTable[xi][yi][0] != '-') ? '' : '-') + 'b[' + yi + ']*this[' + xi + ']') : '0');
+              gpo[o].forEach(
+                  ([xi,yi])=>
+                  op[oi][xi] = 
+                  (grades[oi] == grades[xi] + grades[yi]) ? 
+                        ((mulTable[xi][yi] == '0') ? 
+                                '0' :  ((mulTable[xi][yi][0] != '-') ? '' : '-')  + 'b[' + yi + ']*this[' + xi + ']') 
+                        : '0');
               gpo[o].forEach(([xi,yi])=>{
-                  gp[oi][xi] = ((gp[oi][xi] == '0') ? '' : gp[oi][xi] + '+') + ((mulTable[xi][yi] == '0') ? '0' : ((mulTable[xi][yi][0] != '-') ? '' : '-') + 'b[' + yi + ']*this[' + xi + ']');
-                  cp[oi][xi] = ((cp[oi][xi] == '0') ? '' : cp[oi][xi] + '+') + ((grades[oi] == grades[yi] - grades[xi]) ? gp[oi][xi] : '0');
-                  cps[oi][xi] = ((cps[oi][xi] == '0') ? '' : cps[oi][xi] + '+') + ((grades[oi] == Math.abs(grades[yi] - grades[xi])) ? gp[oi][xi] : '0');
+                  gp[oi][xi] =
+                   ((gp[oi][xi] == '0') ?   '' : gp[oi][xi] + '+') 
+                   + ((mulTable[xi][yi] == '0') ? '0' : 
+                        ((mulTable[xi][yi][0] != '-') ? '' : '-') + 'b[' + yi + ']*this[' + xi + ']');
+                  cp[oi][xi] = ((cp[oi][xi] == '0') ? 
+                    '' : cp[oi][xi] + '+') + ((grades[oi] == grades[yi] - grades[xi]) ? 
+                        gp[oi][xi] : '0');
+                  cps[oi][xi] = ((cps[oi][xi] == '0') ? 
+                    '' : cps[oi][xi] + '+') + ((grades[oi] == Math.abs(grades[yi] - grades[xi])) ? 
+                    gp[oi][xi] : '0');
               }
               );
           }
@@ -339,7 +352,39 @@
           generator.prototype.Add = new Function('b,res','res=res||new this.constructor();\n' + basis.map((x,xi)=>'res[' + xi + ']=b[' + xi + ']+this[' + xi + ']').join(';\n').replace(/(b|this)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a) + ';\nreturn res')
           generator.prototype.Scale = new Function('b,res','res=res||new this.constructor();\n' + basis.map((x,xi)=>'res[' + xi + ']=b*this[' + xi + ']').join(';\n').replace(/(b|this)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a) + ';\nreturn res')
           generator.prototype.Sub = new Function('b,res','res=res||new this.constructor();\n' + basis.map((x,xi)=>'res[' + xi + ']=this[' + xi + ']-b[' + xi + ']').join(';\n').replace(/(b|this)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a) + ';\nreturn res')
-          generator.prototype.Mul = new Function('b,res','res=res||new this.constructor();\n' + gp.map((r,ri)=>'res[' + ri + ']=' + r.join('+').replace(/\+\-/g, '-').replace(/(\w*?)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a).replace(/\+0/g, '') + ';').join('\n') + '\nreturn res;');
+          
+          debugger
+          generator.prototype.Mul = 
+          new Function('b,res',
+            'debugger;' 
+            + 'res=res||new this.constructor();\n' 
+            //[['0', '0'], ['0', '0']]
+
+            //r: ['0', '0'] ['0', '0']
+            //ri: 0 1
+
+            // debugger;res=res||new this.constructor();
+            // res[0]=b[0]*this[0]-b[1]*this[1];
+            // res[1]=b[1]*this[0]+b[0]*this[1];
+            // return res;
+
+            + gp.map((r,ri)=>
+                'res[' + ri + ']=' //res[0] = 
+                    + r.join('+') // 0 + 0
+                        .replace(/\+\-/g, '-') // 0 - 0
+                        .replace(/(\w*?)\[(.*?)\]/g, //
+                            (a,b,c)=>options.mix ? 
+                                '(' 
+                                + b + '.' 
+                                + (c | 0 ? basis[c] : 's') 
+                                + '||0)'
+                            : a
+                        )
+                        .replace(/\+0/g, '') + ';')
+            .join('\n') 
+            
+            + '\nreturn res;');
+          
           
           generator.prototype.LDot = new Function('b,res','res=res||new this.constructor();\n' + cp.map((r,ri)=>'res[' + ri + ']=' + r.join('+').replace(/\+\-/g, '-').replace(/\+0/g, '').replace(/(\w*?)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a) + ';').join('\n') + '\nreturn res;');
           generator.prototype.Dot = new Function('b,res','res=res||new this.constructor();\n' + cps.map((r,ri)=>'res[' + ri + ']=' + r.join('+').replace(/\+\-/g, '-').replace(/\+0/g, '').replace(/(\w*?)\[(.*?)\]/g, (a,b,c)=>options.mix ? '(' + b + '.' + (c | 0 ? basis[c] : 's') + '||0)' : a) + ';').join('\n') + '\nreturn res;');
@@ -906,6 +951,7 @@
           // The geometric product. (or matrix*matrix, matrix*vector, vector*vector product if called with 1D and 2D arrays)
           static Mul(a, b, res) {
               // Resolve expressions  
+              debugger
               while (a.call && !a.length)
                   a = a();
               while (b.call && !b.length)
@@ -1117,7 +1163,9 @@
               if (a.Conjugate)
                   return a.Conjugate;
               if (a instanceof Array)
-                  return a[0].map((c,ci)=>a.map((r,ri)=>Element.Conjugate(a[ri][ci])));
+                  return a[0].map((c,ci)=>a.map((r,ri)=>{
+                            return  Element.Conjugate(a[ri][ci])
+                         }));
               return Element.toEl(a).Conjugate;
           }
           static Normalize(a) {
